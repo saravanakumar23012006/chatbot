@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Bot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --light-gray: #f5f5f5;
+            --dark-gray: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-gray);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .chat-container {
+            padding: 20px;
+        }
+        
+        #queryForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+        
+        input[type="text"], 
+        input[type="file"] {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus, 
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        
+        input[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: #3367d6;
+        }
+        
+        #responseArea {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--light-gray);
+            border-radius: var(--border-radius);
+            min-height: 150px;
+        }
+        
+        #responseArea h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: var(--primary-color);
+        }
+        
+        .loading:after {
+            content: '...';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #eee;
+        }
+        
+        .remove-btn {
+            background-color: #ea4335;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: background 0.3s;
+        }
+        
+        .remove-btn:hover {
+            background-color: #c5221f;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            body {
+                padding: 0;
+            }
+        }
+
+        /* Additional responsiveness improvements */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 90%;
+                margin: 10px auto;
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 20px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+
+            #queryForm {
+                gap: 10px;
+            }
+
+            input[type="text"],
+            input[type="file"],
+            input[type="submit"] {
+                width: 100%;
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .remove-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            header h1 {
+                font-size: 18px;
+            }
+
+            .subtitle {
+                font-size: 11px;
+            }
+
+            .chat-container {
+                padding: 10px 5px;
+            }
+
+            #queryForm {
+                gap: 8px;
+            }
+
+            label {
+                font-size: 14px;
+            }
+
+            input[type="text"],
+            input[type="file"],
+            input[type="submit"] {
+                font-size: 13px;
+                padding: 8px;
+            }
+
+            .remove-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Chat Bot</h1>
+            <div class="subtitle">Ask questions and get intelligent responses</div>
+            <form action="{{ url_for('logout') }}" method="get" style="position: absolute; top: 20px; right: 20px;">
+                <button type="submit" style="
+                    background-color: var(--accent-color);
+                    color: white;
+                    border: none;
+                    border-radius: var(--border-radius);
+                    padding: 8px 14px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background 0.3s;
+                ">Logout</button>
+            </form>
+        </header>
+        
+        <div class="chat-container">
+            <form id="queryForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" name="name" id="name" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="file">Upload File</label>
+                    <input type="file" name="file" id="file" required>
+                    <button type="button" id="removeFileBtn" class="remove-btn" style="display:none;">Remove File</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="question">Your Question</label>
+                    <input type="text" name="question" id="question" placeholder="What would you like to know?" required>
+                </div>
+                
+                <input type="submit" value="Submit">
+            </form>
+            
+            <div class="loading" id="loadingIndicator">Processing your request</div>
+            
+            <div id="responseArea">
+                <h3>Response will appear here</h3>
+                <p>Submit your question to get a response from the Chat Bot.</p>
+            </div>
+        </div>
+        
+        <footer>
+            @Saravana Kumar / Chat Bot<br>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('responseArea').innerHTML = '';
+            
+            const form = document.getElementById('queryForm');
+            const formData = new FormData(form);
+
+            fetch('/generate', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('responseArea').innerHTML =
+                    `<h3>Gemini Response:</h3><p>${data.response}</p>`;
+            })
+            .catch(error => {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('responseArea').innerHTML =
+                    `<h3>Error:</h3><p>Sorry, something went wrong. Please try again.</p>`;
+                console.error('Error:', error);
+            });
+        });
+
+        // Add remove file button functionality
+        const fileInput = document.getElementById('file');
+        const removeBtn = document.getElementById('removeFileBtn');
+        fileInput.addEventListener('change', function() {
+            if (fileInput.value) {
+                removeBtn.style.display = 'inline-block';
+            } else {
+                removeBtn.style.display = 'none';
+            }
+        });
+        removeBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            removeBtn.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
